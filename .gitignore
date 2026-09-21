@@ -1,2 +1,17 @@
 .claude/settings.local.json
 CLAUDE.local.md
+
+# 키, 녹음, 원문, 실행 결과는 올리지 않는다
+.env
+runs/
+recordings/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.aac
+*.opus
+*.mp4
+
+.venv/
+__pycache__/
