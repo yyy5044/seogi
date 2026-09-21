@@ -1,0 +1,2 @@
+- 세션을 시작하면 docs/progress.md를 가장 먼저 읽고, "다음 할 일"부터 이어갈 것
+- docs/progress.md는 /handoff를 실행할 때만 갱신할 것
