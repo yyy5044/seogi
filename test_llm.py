@@ -26,7 +26,8 @@ UTTERANCES = [
 
 DATA = {
     "title": "배포 일정 회의",
-    "agenda": ["배포 시점", "문서 정리"],
+    "summary": "배포 시점을 논의해 다음 주 배포로 정했고, 화자1이 문서 정리를 맡기로 했다.",
+    "topics": ["배포 시점", "문서 정리"],
     "decisions": [{"text": "다음 주에 배포한다.", "evidence": [1, 2]}],
     "todos": [{"text": "문서를 정리한다.", "owner": "화자1", "due": "", "evidence": [3, 99]}],
 }
@@ -49,7 +50,8 @@ class RenderReviewTest(unittest.TestCase):
     def test_근거_번호_옆에_실제_발언이_붙는다(self):
         md = llm.render_review(DATA, UTTERANCES)
         self.assertIn("# 배포 일정 회의", md)
-        self.assertIn("- 배포 시점", md)
+        self.assertIn("## 요약\n\n배포 시점을 논의해", md)
+        self.assertIn("## 대화 주제\n\n- 배포 시점", md)
         self.assertIn("1. 다음 주에 배포한다.", md)
         self.assertIn("  - [1] 00:00 화자1: 다음 주에 배포하죠", md)
         self.assertIn("  - [2] 00:04 화자2: 네 좋습니다", md)
@@ -61,8 +63,10 @@ class RenderReviewTest(unittest.TestCase):
         self.assertIn("  - [99] (원문에 없는 번호)", md)
 
     def test_빈_결과에서_죽지_않는다(self):
-        empty = {"title": "제목", "agenda": [], "decisions": [], "todos": []}
+        empty = {"title": "제목", "summary": "", "topics": [], "decisions": [], "todos": []}
         md = llm.render_review(empty, [])
+        self.assertIn("## 요약\n\n(없음)", md)
+        self.assertIn("## 대화 주제\n\n- (없음)", md)
         self.assertIn("## 결정사항\n\n- (없음)", md)
         self.assertIn("## 할 일\n\n- (없음)", md)
 

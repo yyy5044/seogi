@@ -5,7 +5,7 @@
 입력:   runs/<회의ID>/transcript.md         (2단계 결과. LLM 에 그대로 보낸다)
         runs/<회의ID>/utterances.json       (검토용 파일에 근거 발언 내용을 붙일 때 쓴다)
         prompts/extract.md                  (시스템 프롬프트. 결과를 다듬을 때 이 파일을 고친다)
-출력:   runs/<회의ID>/extraction.json       (제목·안건·결정사항·할 일. 결정사항과 할 일에는 근거 발언 번호)
+출력:   runs/<회의ID>/extraction.json       (제목·요약·대화 주제·결정사항·할 일. 결정사항과 할 일에는 근거 발언 번호)
         runs/<회의ID>/extraction_review.md  (사람이 눈으로 검토하기 위한 파일. 근거 번호 옆에 실제 발언을 붙인다)
         runs/<회의ID>/llm_response.json     (응답 원본과 토큰 사용량)
 
@@ -44,7 +44,8 @@ SCHEMA = {
     "type": "object",
     "properties": {
         "title": {"type": "string", "description": "회의 내용을 한 줄로 요약한 제목"},
-        "agenda": {"type": "array", "items": {"type": "string"}, "description": "다룬 주제 목록"},
+        "summary": {"type": "string", "description": "회의 전체 흐름을 몇 문장으로 요약한 글"},
+        "topics": {"type": "array", "items": {"type": "string"}, "description": "회의에서 오간 대화 주제 목록"},
         "decisions": {
             "type": "array",
             "items": {
@@ -68,7 +69,7 @@ SCHEMA = {
             },
         },
     },
-    "required": ["title", "agenda", "decisions", "todos"],
+    "required": ["title", "summary", "topics", "decisions", "todos"],
     "additionalProperties": False,
 }
 
@@ -136,8 +137,11 @@ def render_review(data: dict, utterances: list[dict]) -> str:
                 lines.append(f"  - [{no}] {format_time(u['start'])} {u['speaker']}: {u['text']}")
         return lines or ["  - (근거 없음)"]
 
-    out = [f"# {data['title']}", "", "## 안건", ""]
-    out += [f"- {a}" for a in data["agenda"]] or ["- (없음)"]
+    out = [f"# {data['title']}", "", "## 요약", ""]
+    out.append(data["summary"] or "(없음)")
+
+    out += ["", "## 대화 주제", ""]
+    out += [f"- {t}" for t in data["topics"]] or ["- (없음)"]
 
     out += ["", "## 결정사항", ""]
     if not data["decisions"]:
@@ -191,7 +195,7 @@ def run(run_dir: Path, force: bool = False) -> dict:
 
     u = response.usage
     print(
-        f"완료 ({elapsed:.0f}초): 안건 {len(data['agenda'])}개, 결정사항 {len(data['decisions'])}개, "
+        f"완료 ({elapsed:.0f}초): 대화 주제 {len(data['topics'])}개, 결정사항 {len(data['decisions'])}개, "
         f"할 일 {len(data['todos'])}개 / 토큰 입력 {u.input_tokens} 출력 {u.output_tokens} "
         f"약 ${cost_usd(u):.3f}"
     )
