@@ -193,7 +193,7 @@ def run(run_dir: Path, force: bool = False) -> dict:
     print(
         f"완료 ({elapsed:.0f}초): 안건 {len(data['agenda'])}개, 결정사항 {len(data['decisions'])}개, "
         f"할 일 {len(data['todos'])}개 / 토큰 입력 {u.input_tokens} 출력 {u.output_tokens} "
-        f"≈ ${cost_usd(u):.3f}"
+        f"약 ${cost_usd(u):.3f}"
     )
     print(f"저장: {extraction_file}, 검토용: {run_dir / 'extraction_review.md'}")
     return data
