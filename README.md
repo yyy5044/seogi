@@ -15,6 +15,7 @@ API 키는 저장소에 없고 컴퓨터마다 환경 변수로 따로 설정해
    | `DAGLO_API_TOKEN` | 다글로 STT API | https://developers.daglo.ai/console → 토큰 메뉴 |
    | `CLOVA_SPEECH_SECRET` | 네이버 CLOVA Speech (인식률 비교용) | 네이버 클라우드 콘솔 → CLOVA Speech → 도메인 → 설정 → 연동 정보 → Secret Key |
    | `CLOVA_SPEECH_INVOKE_URL` | 같은 곳 | 같은 화면의 Invoke URL |
+   | `ANTHROPIC_API_KEY` | Claude API (3단계 추출) | https://console.anthropic.com → API Keys (선불 크레딧 충전 필요) |
 
    ```powershell
    setx DAGLO_API_TOKEN "토큰"
@@ -29,6 +30,7 @@ API 키는 저장소에 없고 컴퓨터마다 환경 변수로 따로 설정해
 ```powershell
 py -3.12 daglo.py recordings/<녹음 파일>      # 1단계: 음성 인식 → stt_response.json
 py -3.12 transcript.py runs/<회의ID>          # 2단계: 발언 단위 원문 → transcript.md, utterances.json
+py -3.12 llm.py runs/<회의ID>                 # 3단계: Claude 추출 → extraction.json, extraction_review.md (--force: 다시 호출)
 py -3.12 -m unittest -v                       # 테스트
 ```
 
@@ -38,12 +40,17 @@ py -3.12 -m unittest -v                       # 테스트
 seogi/
 ├─ README.md               이 파일. 설치·실행법과 폴더 구조
 ├─ CLAUDE.md               Claude Code 작업 규칙 (세션 시작 시 progress.md 먼저 읽기 등)
-├─ requirements.txt        외부 라이브러리 목록 (현재 requests 하나)
+├─ requirements.txt        외부 라이브러리 목록 (requests, anthropic)
 ├─ .gitignore              키·녹음·원문·runs/·캐시를 저장소에서 제외
 │
 ├─ daglo.py                1단계 음성 인식. 녹음을 다글로 API에 올려 runs/<회의ID>/stt_response.json 저장
 ├─ transcript.py           2단계 원문 만들기. 단어 목록을 화자 기준 발언으로 묶어 transcript.md, utterances.json 저장
 ├─ test_transcript.py      2단계 테스트 9개 (화자 전환 분리, 빈 입력 등)
+├─ llm.py                  3단계 추출. transcript.md를 Claude에 보내 extraction.json(근거 번호 포함), extraction_review.md 저장
+├─ test_llm.py             3단계 테스트 10개 (API 호출 없이 파싱·검토 파일·재실행 동작)
+│
+├─ prompts/
+│  └─ extract.md           3단계 시스템 프롬프트. 추출 결과를 다듬을 때 이 파일을 고친다
 │
 ├─ docs/
 │  ├─ spec.md              명세서. 만들 것, 단계, 지킬 것, 완료 기준, 미정 항목
