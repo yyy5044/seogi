@@ -31,6 +31,7 @@ API 키는 저장소에 없고 컴퓨터마다 환경 변수로 따로 설정해
 py -3.12 daglo.py recordings/<녹음 파일>      # 1단계: 음성 인식 → stt_response.json
 py -3.12 transcript.py runs/<회의ID>          # 2단계: 발언 단위 원문 → transcript.md, utterances.json
 py -3.12 llm.py runs/<회의ID>                 # 3단계: Claude 추출 → extraction.json, extraction_review.md (--force: 다시 호출)
+py -3.12 verify.py runs/<회의ID>              # 4단계: 근거 검증 → minutes.md(정리본), excluded.json(제외 목록)
 py -3.12 -m unittest -v                       # 테스트
 ```
 
@@ -48,6 +49,8 @@ seogi/
 ├─ test_transcript.py      2단계 테스트 9개 (화자 전환 분리, 빈 입력 등)
 ├─ llm.py                  3단계 추출. transcript.md를 Claude에 보내 extraction.json(근거 번호 포함), extraction_review.md 저장
 ├─ test_llm.py             3단계 테스트 10개 (API 호출 없이 파싱·검토 파일·재실행 동작)
+├─ verify.py               4단계 근거 검증. extraction.json의 근거 번호를 utterances.json과 대조해 minutes.md(근거를 시각으로 표시), excluded.json 저장
+├─ test_verify.py          4단계 테스트 13개 (가짜 근거 번호 항목 제외, 정상 항목 통과, 빈 입력)
 │
 ├─ prompts/
 │  └─ extract.md           3단계 시스템 프롬프트. 추출 결과를 다듬을 때 이 파일을 고친다
