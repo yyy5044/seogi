@@ -38,7 +38,7 @@ def _headers() -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-# 다글로 API에 application/url, multipart/data-form 두 가지 방식이 있는데 나는 멀티파트 선택(파일 직접 올리려고)
+# 다글로 API에 application/json, multipart/data-form 두 가지 방식이 있는데 나는 멀티파트 선택(파일 직접 올리려고)
 # request_transcript가 하는 건 파일 읽고, 세팅 값과 함께 다글로 API에 요청을 보내고 rid를 받는 것
 def request_transcript(audio_path: Path) -> str:
     """녹음 파일을 multipart 로 직접 올리고 rid 를 받는다."""
