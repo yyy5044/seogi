@@ -32,8 +32,39 @@ py -3.12 transcript.py runs/<회의ID>          # 2단계: 발언 단위 원문 
 py -3.12 -m unittest -v                       # 테스트
 ```
 
-## 폴더
+## 폴더 구조
 
-- `docs/` — 명세(`spec.md`), 진행 상황(`progress.md`)
-- `stt_eval/` — 음성 인식 서비스 비교 실험. 실험 당시 스크립트 스냅샷(`scripts/`), 테스트(`tests/`), 결과와 결정 문서(`docs/`). 파이프라인 본체가 아니다. 자세한 구성은 `stt_eval/README.md`.
-- `recordings/`, `runs/` — 녹음, 정답 원고, 실행 결과. 저장소에 올리지 않는다.
+```
+seogi/
+├─ README.md               이 파일. 설치·실행법과 폴더 구조
+├─ CLAUDE.md               Claude Code 작업 규칙 (세션 시작 시 progress.md 먼저 읽기 등)
+├─ requirements.txt        외부 라이브러리 목록 (현재 requests 하나)
+├─ .gitignore              키·녹음·원문·runs/·캐시를 저장소에서 제외
+│
+├─ daglo.py                1단계 음성 인식. 녹음을 다글로 API에 올려 runs/<회의ID>/stt_response.json 저장
+├─ transcript.py           2단계 원문 만들기. 단어 목록을 화자 기준 발언으로 묶어 transcript.md, utterances.json 저장
+├─ test_transcript.py      2단계 테스트 9개 (화자 전환 분리, 빈 입력 등)
+│
+├─ docs/
+│  ├─ spec.md              명세서. 만들 것, 단계, 지킬 것, 완료 기준, 미정 항목
+│  └─ progress.md          진행 상황. /handoff 때만 갱신, 새 세션은 이 파일부터 읽음
+│
+├─ stt_eval/               음성 인식 서비스 비교 실험 (파이프라인 본체 아님, 실험 당시 상태 보존)
+│  ├─ README.md            실험 폴더 구성과 실행법
+│  ├─ scripts/
+│  │  ├─ daglo.py          실험 시점의 루트 daglo.py 복사본
+│  │  ├─ clova.py          네이버 CLOVA Speech 호출
+│  │  └─ cer.py            정답 원고 vs 인식 결과 CER 계산
+│  ├─ tests/
+│  │  └─ test_cer.py       cer.py 테스트 10개
+│  └─ docs/
+│     ├─ results.md        실험 결과 (측정한 사실만)
+│     └─ decision.md       다글로 유지 결정과 근거, 비용 비교
+│
+├─ .claude/skills/handoff/ /handoff 명령 정의 (progress.md 갱신 절차)
+│
+├─ recordings/             녹음 파일, 직접 받아쓴 정답 원고 (저장소에 안 올림)
+└─ runs/<회의ID>/          단계별 실행 결과. 회의 ID는 녹음 파일 해시 (저장소에 안 올림)
+```
+
+`__init__.py`는 폴더를 파이썬 패키지로 표시하는 빈 파일이고, `__pycache__/`는 파이썬이 만드는 캐시라 둘 다 설명에서 뺐다.
