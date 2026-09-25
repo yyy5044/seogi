@@ -78,6 +78,13 @@ class BodyBlocksTest(unittest.TestCase):
         self.assertIn("문서를 정리한다. (화자1) (근거: 01:10)", lines)
         self.assertIn("[결정사항] 예산을 늘린다. / 원문에 없는 번호: [99]", lines)
 
+    def test_요약은_빈_줄_기준으로_문단_블록을_나눈다(self):
+        data = {**VERIFIED, "summary": "첫 주제 이야기.\n\n둘째 주제 이야기.\n\n\n셋째 주제 이야기.\n"}
+        blocks = notion.body_blocks(data, [], UTTERANCES)
+        paragraphs = [texts(b) for b in blocks[1:4]]
+        self.assertEqual(paragraphs, ["첫 주제 이야기.", "둘째 주제 이야기.", "셋째 주제 이야기."])
+        self.assertEqual(blocks[4]["type"], "heading_2")
+
     def test_빈_결과에서_죽지_않는다(self):
         empty = {"title": "", "summary": "", "topics": [], "decisions": [], "todos": []}
         lines = [texts(b) for b in notion.body_blocks(empty, [], [])]

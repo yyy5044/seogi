@@ -44,7 +44,7 @@ SCHEMA = {
     "type": "object",
     "properties": {
         "title": {"type": "string", "description": "회의 내용을 한 줄로 요약한 제목"},
-        "summary": {"type": "string", "description": "회의 전체 흐름을 몇 문장으로 요약한 글"},
+        "summary": {"type": "string", "description": "원문을 대신할 수 있는 회의 서술. 주제별로 문단을 나누고 문단 사이는 빈 줄. 길이 제한 없음"},
         "topics": {"type": "array", "items": {"type": "string"}, "description": "회의에서 오간 대화 주제 목록"},
         "decisions": {
             "type": "array",

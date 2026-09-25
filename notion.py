@@ -143,7 +143,9 @@ def page_properties(title: str, date: str, meeting_id: str, recording_file: str)
 
 def body_blocks(verified: dict, excluded: list[dict], utterances: list[dict]) -> list[dict]:
     """정리본 + 제외 목록 → 페이지 본문 블록. 순서는 명세서대로 요약 → 대화 주제 → 결정사항 → 할 일 → 제외 목록."""
-    out = [heading("요약"), paragraph(verified["summary"] or "(없음)")]
+    # 요약은 주제별 문단(빈 줄 구분)으로 오므로 노션에도 문단 블록 여러 개로 넣는다
+    summary_paragraphs = [p.strip() for p in verified["summary"].split("\n\n") if p.strip()]
+    out = [heading("요약")] + [paragraph(p) for p in summary_paragraphs or ["(없음)"]]
 
     out.append(heading("대화 주제"))
     out += [bullet(t) for t in verified["topics"]] or [bullet("(없음)")]
