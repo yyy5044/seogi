@@ -77,8 +77,11 @@ seogi/
 │  │  ├─ test_cer.py       cer.py 테스트 10개
 │  │  ├─ results.md        실험 결과 (측정한 사실만)
 │  │  └─ decision.md       다글로 유지 결정과 근거, 비용 비교
-│  └─ keyword_boost/       다글로 키워드 부스팅 효과 → 켜면 CER 악화, 파이프라인에 넣지 않음
-│     ├─ keyword_boost.py  부스팅 켜고/끄고 인식해 텍스트로 저장
+│  ├─ keyword_boost/       다글로 키워드 부스팅 효과 → 켜면 CER 악화, 파이프라인에 넣지 않음
+│  │  ├─ keyword_boost.py  부스팅 켜고/끄고 인식해 텍스트로 저장
+│  │  └─ report.md         실험 보고서
+│  └─ speaker_count_hint/  다글로 화자 수 힌트 → 3 이상 무시, 2는 2명 강제. 파이프라인에 넣지 않음
+│     ├─ speaker_count_hint.py  힌트 값을 바꿔 인식하고 화자별 발언·단어 수 출력
 │     └─ report.md         실험 보고서
 │
 ├─ .claude/skills/handoff/ /handoff 명령 정의 (progress.md 갱신 절차)
