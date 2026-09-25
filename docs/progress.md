@@ -23,7 +23,7 @@
 - **실험: 다글로 키워드 부스팅** (`experiments/keyword_boost/report.md`, 스크립트 `keyword_boost.py`): 2분 표본 CER 부스팅 없음 10.7%(대조군 재현 동일) / 키워드 2개 boost 1: 12.7% / boost 7: 14.7% / 키워드 9개 boost 7: 15.5%. 켜면 없던 말이 같은 자리에 끼어들고(삽입 11→23→34), 맞던 "구인장"이 "구인자"로 바뀜. **결론: 파이프라인에 넣지 않음.** 실험용으로 만들었던 `daglo.py` 부스팅 코드·`keywords.txt`·`test_daglo.py`는 커밋 없이 되돌렸다(사용자 결정).
 - **`docs/spec.md`**: 3단계 Claude·요약, 5단계 결정, 미정 없음, **"용어" 절 추가**(이번 세션, 커밋 대기). 버전 v0.6 유지.
 - **테스트 58개 통과** — 확인: 루트에서 `py -3.12 -m unittest` → `OK`. `tests/` 48개(transcript 9, llm 10, verify 13, notion 16) + `experiments/stt_compare/test_cer.py` 10.
-- 푸시 상태: `origin/main`은 `e40b994`까지. 로컬은 `251d0a1` + 이번 docs 커밋으로 앞서 있음. **push 안 됨.**
+- 푸시 상태: `9da43d8`까지 `origin/main`에 푸시됨. 이후 spec(교정 계획)·progress(할 일 갱신) 수정은 커밋 여부를 `git status`로 확인.
 
 기타 참고:
 - 다글로 응답: `sttResults[].words[]` = `{speaker:"1", word:" 네", startTime:{seconds:"0", nanos:...}, ...}`. `seconds`·`speaker` 문자열. `segmentId` 안 씀.
@@ -32,18 +32,19 @@
 
 ## 진행 중
 
-없음. (`docs/spec.md` 용어 절과 이 문서가 커밋 대기 중이면 먼저 커밋.)
+없음.
 
 ## 다음 할 일
 
-1. **push** (로컬이 origin보다 앞섬).
-2. **사용자의 노션 페이지 검토** 후 품질 개선. 발견했지만 손대지 않은 것:
+1. **`llm.py`, `verify.py`, `notion.py`, `run.py` 흐름 설명.** 사용자가 이 네 파일은 아직 코드를 읽지 않아 정확한 로직을 모른다. 작업 방식대로 함수별 역할을 흐름 중심으로 설명하는 시간을 갖는다(`daglo.py`, `transcript.py`는 이미 함).
+2. **교정 단계 추가 구현** — 설계는 `docs/spec.md` "계획: 교정 단계 추가" 절에 확정해 둠(2단계와 추출 사이에 `correct.py`, 6단계로 재편, 원본 보존, 용어집+회의별 맥락, 번호 검증, 80개씩 분할). 만들 때 spec 단계 표·"LLM은 3단계에만"·README·`run.py`를 함께 고친다. 아직 코드 없음.
+3. **사용자의 노션 페이지 검토** 후 품질 개선. 발견했지만 손대지 않은 것:
    - 요약 문체가 실행마다 다름("~했다"/"~했습니다"). 원하면 `prompts/extract.md`에 문체 한 줄.
    - 회의일은 파일 수정 시각이라 파일을 옮기면 오늘 날짜가 됨. 사용자 결정: 노션에서 직접 고친다.
    - 다글로가 50분 회의에서 화자 8명(화자5~8은 발언 1~6개). 담당자 표기에 영향 없었음.
    - 노션 원문 표가 99행마다 나뉨(API 제한).
-3. `daglo.py` 보강(급하지 않음): `stt_rid.txt`만 남고 다글로 작업이 실패하면 재실행 때 실패한 `rid`만 계속 조회. 실패 상태면 `stt_rid.txt` 삭제 또는 재업로드. `experiments/stt_compare/daglo.py` 스냅샷은 건드리지 않는다.
-4. 다른 컴퓨터: `README.md` "새 컴퓨터에서 시작할 때". 환경 변수 6개(`DAGLO_API_TOKEN`, `CLOVA_SPEECH_SECRET`, `CLOVA_SPEECH_INVOKE_URL`, `ANTHROPIC_API_KEY`, `NOTION_API_KEY`, `NOTION_DATABASE_ID`) `setx`. `runs/`·`recordings/` gitignore.
+4. `daglo.py` 보강(급하지 않음): `stt_rid.txt`만 남고 다글로 작업이 실패하면 재실행 때 실패한 `rid`만 계속 조회. 실패 상태면 `stt_rid.txt` 삭제 또는 재업로드. `experiments/stt_compare/daglo.py` 스냅샷은 건드리지 않는다.
+5. 다른 컴퓨터: `README.md` "새 컴퓨터에서 시작할 때". 환경 변수 6개(`DAGLO_API_TOKEN`, `CLOVA_SPEECH_SECRET`, `CLOVA_SPEECH_INVOKE_URL`, `ANTHROPIC_API_KEY`, `NOTION_API_KEY`, `NOTION_DATABASE_ID`) `setx`. `runs/`·`recordings/` gitignore.
 
 ## 결정과 이유
 
