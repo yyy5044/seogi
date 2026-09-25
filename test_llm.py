@@ -74,7 +74,7 @@ class RenderReviewTest(unittest.TestCase):
 class CostTest(unittest.TestCase):
     def test_토큰_수를_달러로_바꾼다(self):
         usage = SimpleNamespace(input_tokens=1_000_000, output_tokens=100_000)
-        self.assertAlmostEqual(llm.cost_usd(usage), 5.0 + 2.5)
+        self.assertAlmostEqual(llm.cost_usd(usage), 4.0 + 2.0)
 
 
 class RunTest(unittest.TestCase):

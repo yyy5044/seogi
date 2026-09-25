@@ -23,9 +23,9 @@ import anthropic
 
 from transcript import format_time
 
-MODEL = "claude-opus-5"
+MODEL = "claude-opus-5-5"
 MAX_TOKENS = 16000
-PRICE_PER_MTOK = {"input": 5.0, "output": 25.0}  # 미국 달러, 100만 토큰당
+PRICE_PER_MTOK = {"input": 4.0, "output": 20.0}  # 미국 달러, 100만 토큰당
 RUNS_DIR = Path("runs")
 PROMPT_FILE = Path(__file__).parent / "prompts" / "extract.md"
 
@@ -94,7 +94,8 @@ def extract(transcript_md: str, prompt: str) -> tuple[dict, anthropic.types.Mess
         max_tokens=MAX_TOKENS,
         system=prompt,
         messages=[{"role": "user", "content": transcript_md}],
-        output_config={"format": {"type": "json_schema", "schema": SCHEMA}},
+        # effort: Opus 5.5 의 기본값은 medium. Opus 5 와 같은 품질로 시작하려고 high 로 명시
+        output_config={"effort": "high", "format": {"type": "json_schema", "schema": SCHEMA}},
     )
     if response.stop_reason == "refusal":
         sys.exit(f"모델이 응답을 거부했습니다: {response.stop_details}")
