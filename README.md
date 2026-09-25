@@ -16,6 +16,8 @@ API 키는 저장소에 없고 컴퓨터마다 환경 변수로 따로 설정해
    | `CLOVA_SPEECH_SECRET` | 네이버 CLOVA Speech (인식률 비교용) | 네이버 클라우드 콘솔 → CLOVA Speech → 도메인 → 설정 → 연동 정보 → Secret Key |
    | `CLOVA_SPEECH_INVOKE_URL` | 같은 곳 | 같은 화면의 Invoke URL |
    | `ANTHROPIC_API_KEY` | Claude API (3단계 추출) | https://console.anthropic.com → API Keys (선불 크레딧 충전 필요) |
+   | `NOTION_API_KEY` | 노션 API (5단계 기록) | https://www.notion.so/profile/integrations → 새 내부 통합 → 시크릿. 그 다음 회의록 DB 페이지 우상단 `...` → 연결 → 이 통합을 추가해야 스크립트가 DB에 접근할 수 있다 |
+   | `NOTION_DATABASE_ID` | 회의록 DB | DB 페이지 주소 `notion.so/...` 끝의 32자리 (예: `4d21d183ff2541f7866cd33220a57883`) |
 
    ```powershell
    setx DAGLO_API_TOKEN "토큰"
@@ -31,7 +33,9 @@ API 키는 저장소에 없고 컴퓨터마다 환경 변수로 따로 설정해
 py -3.12 daglo.py recordings/<녹음 파일>      # 1단계: 음성 인식 → stt_response.json
 py -3.12 transcript.py runs/<회의ID>          # 2단계: 발언 단위 원문 → transcript.md, utterances.json
 py -3.12 llm.py runs/<회의ID>                 # 3단계: Claude 추출 → extraction.json, extraction_review.md (--force: 다시 호출)
-py -3.12 verify.py runs/<회의ID>              # 4단계: 근거 검증 → minutes.md(정리본), excluded.json(제외 목록)
+py -3.12 verify.py runs/<회의ID>              # 4단계: 근거 검증 → minutes.md(정리본), verified.json, excluded.json(제외 목록)
+py -3.12 notion.py runs/<회의ID>              # 5단계: 노션 회의록 DB에 페이지 생성 (같은 회의 ID면 다시 만들지 않음)
+py -3.12 run.py recordings/<녹음 파일>        # 1~5단계 한 번에
 py -3.12 -m unittest -v                       # 테스트
 ```
 
@@ -44,13 +48,16 @@ seogi/
 ├─ requirements.txt        외부 라이브러리 목록 (requests, anthropic)
 ├─ .gitignore              키·녹음·원문·runs/·캐시를 저장소에서 제외
 │
-├─ daglo.py                1단계 음성 인식. 녹음을 다글로 API에 올려 runs/<회의ID>/stt_response.json 저장
+├─ run.py                  전체 실행. 녹음 파일 하나로 1~5단계를 차례로 부르고 단계별 소요 시간 출력
+├─ daglo.py                1단계 음성 인식. 녹음을 다글로 API에 올려 runs/<회의ID>/stt_response.json, recording.json(녹음 이름·수정 시각) 저장
 ├─ transcript.py           2단계 원문 만들기. 단어 목록을 화자 기준 발언으로 묶어 transcript.md, utterances.json 저장
 ├─ test_transcript.py      2단계 테스트 9개 (화자 전환 분리, 빈 입력 등)
 ├─ llm.py                  3단계 추출. transcript.md를 Claude에 보내 extraction.json(근거 번호 포함), extraction_review.md 저장
 ├─ test_llm.py             3단계 테스트 10개 (API 호출 없이 파싱·검토 파일·재실행 동작)
-├─ verify.py               4단계 근거 검증. extraction.json의 근거 번호를 utterances.json과 대조해 minutes.md(근거를 시각으로 표시), excluded.json 저장
+├─ verify.py               4단계 근거 검증. extraction.json의 근거 번호를 utterances.json과 대조해 minutes.md(근거를 시각으로 표시), verified.json, excluded.json 저장
 ├─ test_verify.py          4단계 테스트 13개 (가짜 근거 번호 항목 제외, 정상 항목 통과, 빈 입력)
+├─ notion.py               5단계 노션 기록. 회의록 DB에 페이지 1개(요약→대화 주제→결정사항→할 일→제외 목록), 하위 페이지 '원문'에 발언 표
+├─ test_notion.py          5단계 테스트 15개 (API 호출 없이 블록 생성, 제목 번호, 중복 방지)
 │
 ├─ prompts/
 │  └─ extract.md           3단계 시스템 프롬프트. 추출 결과를 다듬을 때 이 파일을 고친다

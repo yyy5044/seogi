@@ -2,6 +2,7 @@
 
 사용법: python daglo.py <녹음 파일>
 결과:   runs/<회의ID>/stt_response.json (응답 원본), runs/<회의ID>/transcript.txt (텍스트만)
+        runs/<회의ID>/recording.json (녹음 파일 이름과 수정 시각. 5단계가 회의일로 쓴다)
 
 API 토큰은 환경 변수 DAGLO_API_TOKEN 에서만 읽는다.
 """
@@ -11,6 +12,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -79,9 +81,17 @@ def wait_result(rid: str) -> dict:
 
 
 # 위 함수들 조립해서 실제로 회의록 원본 뽑는 함수
+def write_recording_info(audio_path: Path, run_dir: Path) -> None:
+    """녹음 파일 이름과 수정 시각을 recording.json 에 남긴다. 5단계가 회의일로 쓴다."""
+    modified = datetime.fromtimestamp(audio_path.stat().st_mtime).isoformat(timespec="seconds")
+    info = {"file": audio_path.name, "modified": modified}
+    (run_dir / "recording.json").write_text(json.dumps(info, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def transcribe(audio_path: Path) -> Path:
     run_dir = RUNS_DIR / meeting_id(audio_path)
     run_dir.mkdir(parents=True, exist_ok=True)
+    write_recording_info(audio_path, run_dir)  # 결과가 이미 있어도 매번 쓴다 (예전 실행 폴더 보완)
     response_file = run_dir / "stt_response.json"
     rid_file = run_dir / "stt_rid.txt"
 

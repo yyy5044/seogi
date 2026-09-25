@@ -4,6 +4,7 @@
 입력:   runs/<회의ID>/extraction.json   (3단계 결과. 결정사항·할 일에 근거 발언 번호 evidence)
         runs/<회의ID>/utterances.json   (2단계 결과. 발언 번호 no, 시각 start, 화자, 내용)
 출력:   runs/<회의ID>/minutes.md        (정리본. 근거를 번호 대신 발언 시각으로 표시)
+        runs/<회의ID>/verified.json     (통과한 항목만 남긴 extraction.json. 5단계가 노션 본문을 만들 때 쓴다)
         runs/<회의ID>/excluded.json     (정리본에서 뺀 항목과 이유)
 
 LLM 이 지어낸 항목을 거르는 단계. 결정사항과 할 일의 근거 번호가 원문(utterances.json)에
@@ -56,13 +57,14 @@ def verify(data: dict, utterances: list[dict]) -> tuple[dict, list[dict]]:
     return kept, excluded
 
 
+def evidence_times(nos: list[int], utterances: list[dict]) -> str:
+    """근거 발언 번호 목록 → "00:23, 00:36" 처럼 시각을 쉼표로 이은 문자열. 5단계도 같이 쓴다."""
+    start_by_no = {u["no"]: u["start"] for u in utterances}
+    return ", ".join(format_time(start_by_no[no]) for no in sorted(set(nos)))
+
+
 def render_minutes(data: dict, utterances: list[dict]) -> str:
     """통과한 결과 → 정리본 마크다운. 근거는 발언 번호 대신 그 발언의 시각으로 적는다."""
-    start_by_no = {u["no"]: u["start"] for u in utterances}
-
-    def evidence_times(nos: list[int]) -> str:
-        return ", ".join(format_time(start_by_no[no]) for no in sorted(set(nos)))
-
     out = [f"# {data['title']}", "", "## 요약", "", data["summary"] or "(없음)"]
 
     out += ["", "## 대화 주제", ""]
@@ -72,7 +74,7 @@ def render_minutes(data: dict, utterances: list[dict]) -> str:
     if not data["decisions"]:
         out.append("- (없음)")
     for i, d in enumerate(data["decisions"], start=1):
-        out.append(f"{i}. {d['text']} (근거: {evidence_times(d['evidence'])})")
+        out.append(f"{i}. {d['text']} (근거: {evidence_times(d['evidence'], utterances)})")
 
     out += ["", "## 할 일", ""]
     if not data["todos"]:
@@ -80,13 +82,13 @@ def render_minutes(data: dict, utterances: list[dict]) -> str:
     for i, t in enumerate(data["todos"], start=1):
         meta = " / ".join(x for x in (t.get("owner", ""), t.get("due", "")) if x)
         head = f"{i}. {t['text']}" + (f" ({meta})" if meta else "")
-        out.append(f"{head} (근거: {evidence_times(t['evidence'])})")
+        out.append(f"{head} (근거: {evidence_times(t['evidence'], utterances)})")
 
     return "\n".join(out) + "\n"
 
 
 def run(run_dir: Path) -> tuple[dict, list[dict]]:
-    """runs/<회의ID>/extraction.json → minutes.md, excluded.json. (통과한 결과, 제외 목록) 을 돌려준다."""
+    """runs/<회의ID>/extraction.json → minutes.md, verified.json, excluded.json. (통과한 결과, 제외 목록) 을 돌려준다."""
     extraction_file = run_dir / "extraction.json"
     utterances_file = run_dir / "utterances.json"
     if not extraction_file.exists() or not utterances_file.exists():
@@ -100,6 +102,7 @@ def run(run_dir: Path) -> tuple[dict, list[dict]]:
 
     minutes_file = run_dir / "minutes.md"
     minutes_file.write_text(render_minutes(kept, utterances), encoding="utf-8")
+    (run_dir / "verified.json").write_text(json.dumps(kept, ensure_ascii=False, indent=2), encoding="utf-8")
     (run_dir / "excluded.json").write_text(
         json.dumps(excluded, ensure_ascii=False, indent=2), encoding="utf-8"
     )

@@ -116,10 +116,11 @@ class RunTest(unittest.TestCase):
         (self.tmp / "extraction.json").write_text(json.dumps(DATA, ensure_ascii=False), encoding="utf-8")
         (self.tmp / "utterances.json").write_text(json.dumps(UTTERANCES, ensure_ascii=False), encoding="utf-8")
 
-    def test_두_파일을_만든다(self):
+    def test_세_파일을_만든다(self):
         kept, excluded = verify.run(self.tmp)
         self.assertEqual(kept["decisions"], [GOOD_DECISION])
         self.assertTrue((self.tmp / "minutes.md").exists())
+        self.assertEqual(json.loads((self.tmp / "verified.json").read_text(encoding="utf-8")), kept)
         saved = json.loads((self.tmp / "excluded.json").read_text(encoding="utf-8"))
         self.assertEqual(saved, excluded)
         self.assertEqual(len(saved), 3)
