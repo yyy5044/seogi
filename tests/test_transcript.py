@@ -1,4 +1,4 @@
-"""2단계(transcript.py) 고정 표본 테스트. 실행: python -m unittest test_transcript -v
+"""2단계(transcript.py) 고정 표본 테스트. 실행: python -m unittest tests.test_transcript -v
 
 표본은 실제 회의가 아니라 지어낸 단어 목록이다 (원문은 저장소에 올리지 않는다).
 """

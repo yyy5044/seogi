@@ -1,4 +1,4 @@
-"""3단계(llm.py) 테스트. 실행: python -m unittest test_llm -v
+"""3단계(llm.py) 테스트. 실행: python -m unittest tests.test_llm -v
 
 Claude API 는 부르지 않는다. 응답을 흉내 낸 가짜 객체로 파싱·검토 파일·재실행 동작만 확인한다.
 표본은 실제 회의가 아니라 지어낸 발언이다.

@@ -1,4 +1,4 @@
-"""5단계(notion.py) 테스트. 실행: python -m unittest test_notion -v
+"""5단계(notion.py) 테스트. 실행: python -m unittest tests.test_notion -v
 
 노션 API 는 부르지 않는다. _request 를 가짜로 바꿔 블록 만들기, 제목 번호, 중복 방지, 요청 순서를 확인한다.
 표본은 실제 회의가 아니라 지어낸 발언이다.

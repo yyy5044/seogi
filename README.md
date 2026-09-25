@@ -51,13 +51,15 @@ seogi/
 ├─ run.py                  전체 실행. 녹음 파일 하나로 1~5단계를 차례로 부르고 단계별 소요 시간 출력
 ├─ daglo.py                1단계 음성 인식. 녹음을 다글로 API에 올려 runs/<회의ID>/stt_response.json, recording.json(녹음 이름·수정 시각) 저장
 ├─ transcript.py           2단계 원문 만들기. 단어 목록을 화자 기준 발언으로 묶어 transcript.md, utterances.json 저장
-├─ test_transcript.py      2단계 테스트 9개 (화자 전환 분리, 빈 입력 등)
 ├─ llm.py                  3단계 추출. transcript.md를 Claude에 보내 extraction.json(근거 번호 포함), extraction_review.md 저장
-├─ test_llm.py             3단계 테스트 10개 (API 호출 없이 파싱·검토 파일·재실행 동작)
 ├─ verify.py               4단계 근거 검증. extraction.json의 근거 번호를 utterances.json과 대조해 minutes.md(근거를 시각으로 표시), verified.json, excluded.json 저장
-├─ test_verify.py          4단계 테스트 13개 (가짜 근거 번호 항목 제외, 정상 항목 통과, 빈 입력)
 ├─ notion.py               5단계 노션 기록. 회의록 DB에 페이지 1개(요약→대화 주제→결정사항→할 일→제외 목록), 하위 페이지 '원문'에 발언 표
-├─ test_notion.py          5단계 테스트 15개 (API 호출 없이 블록 생성, 제목 번호, 중복 방지)
+│
+├─ tests/                  파이프라인 테스트 (API 호출 없음). 루트에서 py -3.12 -m unittest 로 전부 실행
+│  ├─ test_transcript.py   2단계 9개 (화자 전환 분리, 빈 입력 등)
+│  ├─ test_llm.py          3단계 10개 (파싱·검토 파일·재실행 동작)
+│  ├─ test_verify.py       4단계 13개 (가짜 근거 번호 항목 제외, 정상 항목 통과, 빈 입력)
+│  └─ test_notion.py       5단계 16개 (블록 생성, 제목 번호, 중복 방지)
 │
 ├─ prompts/
 │  └─ extract.md           3단계 시스템 프롬프트. 추출 결과를 다듬을 때 이 파일을 고친다

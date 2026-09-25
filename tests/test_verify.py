@@ -1,4 +1,4 @@
-"""4단계(verify.py) 테스트. 실행: python -m unittest test_verify -v
+"""4단계(verify.py) 테스트. 실행: python -m unittest tests.test_verify -v
 
 명세서 완료 기준: 가짜 근거 번호를 단 항목이 제외된다 / 정상 항목은 통과한다 / 빈 입력에서 죽지 않는다.
 표본은 실제 회의가 아니라 지어낸 발언이다.
