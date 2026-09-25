@@ -1,6 +1,6 @@
 """CER(문자 오류율) 계산. 정답 원고와 인식 결과를 비교한다.
 
-사용법: (저장소 루트에서) python stt_eval/scripts/cer.py <정답.txt> <인식결과.txt> [<인식결과2.txt> ...]
+사용법: (저장소 루트에서) python experiments/stt_compare/cer.py <정답.txt> <인식결과.txt> [<인식결과2.txt> ...]
 
 CER = (치환 + 삭제 + 삽입) / 정답 글자 수
 비교 전에 공백과 문장 부호를 모두 지우고 소문자로 맞춘다.
@@ -85,7 +85,7 @@ def cer(reference: str, hypothesis: str) -> dict:
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        sys.exit("사용법: (저장소 루트에서) python stt_eval/scripts/cer.py <정답.txt> <인식결과.txt> [<인식결과2.txt> ...]")
+        sys.exit("사용법: (저장소 루트에서) python experiments/stt_compare/cer.py <정답.txt> <인식결과.txt> [<인식결과2.txt> ...]")
     reference = extract_text(Path(sys.argv[1]).read_text(encoding="utf-8"))
     print(f"정답: {sys.argv[1]}")
     for path in sys.argv[2:]:

@@ -66,17 +66,18 @@ seogi/
 │  ├─ spec.md              명세서. 만들 것, 단계, 지킬 것, 완료 기준, 미정 항목
 │  └─ progress.md          진행 상황. /handoff 때만 갱신, 새 세션은 이 파일부터 읽음
 │
-├─ stt_eval/               음성 인식 서비스 비교 실험 (파이프라인 본체 아님, 실험 당시 상태 보존)
-│  ├─ README.md            실험 폴더 구성과 실행법
-│  ├─ scripts/
+├─ experiments/            실험 기록 (파이프라인 본체 아님). 실험마다 폴더 하나, 당시 스크립트와 보고서 보존
+│  ├─ README.md            실험 폴더 규칙과 실험 목록
+│  ├─ stt_compare/         다글로 vs CLOVA 인식률 비교 → 다글로 유지
 │  │  ├─ daglo.py          실험 시점의 루트 daglo.py 복사본
 │  │  ├─ clova.py          네이버 CLOVA Speech 호출
-│  │  └─ cer.py            정답 원고 vs 인식 결과 CER 계산
-│  ├─ tests/
-│  │  └─ test_cer.py       cer.py 테스트 10개
-│  └─ docs/
-│     ├─ results.md        실험 결과 (측정한 사실만)
-│     └─ decision.md       다글로 유지 결정과 근거, 비용 비교
+│  │  ├─ cer.py            정답 원고 vs 인식 결과 CER 계산 (다른 실험도 씀)
+│  │  ├─ test_cer.py       cer.py 테스트 10개
+│  │  ├─ results.md        실험 결과 (측정한 사실만)
+│  │  └─ decision.md       다글로 유지 결정과 근거, 비용 비교
+│  └─ keyword_boost/       다글로 키워드 부스팅 효과 → 켜면 CER 악화, 파이프라인에 넣지 않음
+│     ├─ keyword_boost.py  부스팅 켜고/끄고 인식해 텍스트로 저장
+│     └─ report.md         실험 보고서
 │
 ├─ .claude/skills/handoff/ /handoff 명령 정의 (progress.md 갱신 절차)
 │

@@ -1,6 +1,6 @@
 """네이버 CLOVA Speech 장문 인식 호출 (다글로와 인식률 비교용).
 
-사용법: (저장소 루트에서) python stt_eval/scripts/clova.py <녹음 파일>
+사용법: (저장소 루트에서) python experiments/stt_compare/clova.py <녹음 파일>
 결과:   runs/<회의ID>/clova_response.json (응답 원본), runs/<회의ID>/clova_transcript.txt (텍스트만)
 
 환경 변수:
@@ -80,7 +80,7 @@ def transcribe(audio_path: Path) -> Path:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        sys.exit("사용법: (저장소 루트에서) python stt_eval/scripts/clova.py <녹음 파일>")
+        sys.exit("사용법: (저장소 루트에서) python experiments/stt_compare/clova.py <녹음 파일>")
     path = Path(sys.argv[1])
     if not path.is_file():
         sys.exit(f"파일이 없습니다: {path}")

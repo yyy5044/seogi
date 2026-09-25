@@ -1,8 +1,8 @@
-"""cer.py 테스트. 실행: (저장소 루트에서) python -m unittest stt_eval.tests.test_cer -v"""
+"""cer.py 테스트. 실행: (저장소 루트에서) python -m unittest experiments.stt_compare.test_cer -v"""
 
 import unittest
 
-from stt_eval.scripts.cer import cer, extract_text, normalize
+from experiments.stt_compare.cer import cer, extract_text, normalize
 
 
 class NormalizeTest(unittest.TestCase):
